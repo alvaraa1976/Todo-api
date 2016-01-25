@@ -37,7 +37,7 @@ app.get('/todos/:id', function (req, res) {
     
     //res.send('Asking for todo with id of ' + todoId);
     //res.json(todos);
-})
+});
 
 //POST /todos
 app.post('/todos', function (req, res) {
@@ -50,6 +50,26 @@ app.post('/todos', function (req, res) {
     body.id = todoNextId++;
     todos.push(body);
     res.json(body);
+});
+
+//DELETE /todos/:id
+app.delete('/todos/:id', function (req, res) {
+    var todoId = parseInt(req.params.id, 10);
+    //this underscore function replaces the commented out forEach loop
+    var matchedTodo = _.findWhere(todos, {id: todoId})
+    todos = _.without(todos,matchedTodo);
+    /*var matchedItem;
+    todos.forEach(function (todo) {
+        if (todoId === todo.id) {
+            matchedItem = todo;
+        }
+    });*/
+    if (matchedTodo) {
+        res.json(matchedTodo);
+    } else {
+        //res.status(404).send();
+        res.status(404).json({"error": "no todo found with that id"});
+    }
 });
 
 app.listen(PORT, function () {
