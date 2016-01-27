@@ -115,21 +115,55 @@ app.post('/todos', function (req, res) {
 //DELETE /todos/:id
 app.delete('/todos/:id', function (req, res) {
     var todoId = parseInt(req.params.id, 10);
-    //this underscore function replaces the commented out forEach loop
+    var where = {};
+    
+    db.todo.destroy({
+        where: {
+            id: todoId
+        }
+    }).then(function (rowsDeleted) {
+        if (rowsDeleted === 0) {
+            res.status(404).json({
+                error: 'No todo with id'
+            });
+        } else {
+            res.status(204).send();
+        }
+        
+    }, function () {
+        res.status(500).send();
+    });
+            
+    /*db.todo.findById(todoId).then(function (todo){
+        if (!!todo) {
+            
+        } else {
+            res.status(404).send();
+        }
+    }, function (e) {
+        res.status(500).json(e);
+    });*/
+    
+    
+    
+    /*this section replaced by sequelize version
     var matchedTodo = _.findWhere(todos, {id: todoId})
-    todos = _.without(todos,matchedTodo);
-    /*var matchedItem;
+    todos = _.without(todos,matchedTodo);*/
+    
+    /* this code replaced by the findWhere function
+    var matchedItem;
     todos.forEach(function (todo) {
         if (todoId === todo.id) {
             matchedItem = todo;
         }
     });*/
-    if (matchedTodo) {
+    
+    /*if (matchedTodo) {
         res.json(matchedTodo);
     } else {
         //res.status(404).send();
         res.status(404).json({"error": "no todo found with that id"});
-    }
+    }*/
 });
 
 //PUT /todos/:id
