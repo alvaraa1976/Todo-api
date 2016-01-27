@@ -38,20 +38,33 @@ app.get('/todos', function (req, res) {
 // GET  /todos/:id
 app.get('/todos/:id', function (req, res) {
     var todoId = parseInt(req.params.id, 10);
-    //this underscore function replaces the commented out forEach loop
-    var matchedTodo = _.findWhere(todos, {id: todoId})
     
-    /*var matchedItem;
+    db.todo.findById(todoId).then(function (todo){
+        if (!!todo) {
+            res.json(todo.toJSON());
+        } else {
+            res.status(404).send();
+        }
+    }, function (e) {
+        res.status(500).json(e);
+    });
+    
+    //this section was replaced by a sequelize version
+    /*var matchedTodo = _.findWhere(todos, {id: todoId})
+    if (matchedTodo) {
+        res.json(matchedTodo);
+    } else {
+        res.status(404).send();
+    }*/
+    
+    
+    /*this loop was replaced by the underscore function findWhere
+    var matchedItem;
     todos.forEach(function (todo) {
         if (todoId === todo.id) {
             matchedItem = todo;
         }
     });*/
-    if (matchedTodo) {
-        res.json(matchedTodo);
-    } else {
-        res.status(404).send();
-    }
     
     //res.send('Asking for todo with id of ' + todoId);
     //res.json(todos);
