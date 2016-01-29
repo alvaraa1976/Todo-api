@@ -23,7 +23,7 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.VIRTUAL,
             allowNull: false,
             validate: {
-                len: [7,100]
+                len: [7, 100]
             },
             set: function (value) {
                 var salt = bcrypt.genSaltSync(10);
@@ -62,6 +62,27 @@ module.exports = function (sequelize, DataTypes) {
                     }, function (e) {
                         reject();
                     });
+                });
+            },
+            findByToken: function (token) {
+                return new Promise(function (resolve, reject) {
+                    try {
+                        var decodedJWT = jwt.verify(token, 'qwerty123');
+                        var bytes = cryptojs.AES.decrypt(decodedJWT.token, 'abc123!@$');
+                        var tokenData = JSON.parse(bytes.toString(cryptojs.enc.Utf8));
+                        
+                        user.findById(tokenData.id).then(function (user) {
+                            if (user) {
+                                resolve(user);
+                            } else {
+                                reject();
+                            }
+                        }, function (e) {
+                           reject(); 
+                        });
+                    } catch (e) {
+                        reject();
+                    }
                 });
             }
         },
